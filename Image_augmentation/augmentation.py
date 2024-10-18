@@ -36,25 +36,21 @@ def augment_and_save_images(input_base_dir, output_base_dir, num_augmentations_p
     """Augment images and save them to the output directory."""
     os.makedirs(output_base_dir, exist_ok=True)
 
-    # Iterate through items in the input base directory
     for class_name in os.listdir(input_base_dir):
         class_input_dir = os.path.join(input_base_dir, class_name)
         
-        # Check if it's a directory
         if not os.path.isdir(class_input_dir):
             continue
 
         class_output_dir = os.path.join(output_base_dir, class_name)
         os.makedirs(class_output_dir, exist_ok=True)
 
-        # Get all image files in the class directory
         image_files = [file for file in os.listdir(class_input_dir) if file.endswith(('.png', '.jpg', '.jpeg'))]
 
         for img_file in image_files:
             img_path = os.path.join(class_input_dir, img_file)
             image = cv2.imread(img_path)
 
-            # Check if the image was loaded successfully
             if image is None:
                 print(f"Error loading image {img_path}. Skipping.")
                 continue
@@ -66,9 +62,67 @@ def augment_and_save_images(input_base_dir, output_base_dir, num_augmentations_p
 
     print(f"Augmentation completed for all classes. Check the output base directory: {output_base_dir}")
 
+def reduce_noise(image):
+    """Reduce noise in the image using Gaussian blur."""
+    return cv2.GaussianBlur(image, (5, 5), 0)
+
+def color_correction(image):
+    """Apply CLAHE for color correction."""
+    lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+    l, a, b = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    cl = clahe.apply(l)
+    limg = cv2.merge((cl, a, b))
+    return cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+
+def preprocess_and_save_images(input_base_dir, output_base_dir, target_size=(224, 224)):
+    """Preprocess images and save them to the output directory."""
+    os.makedirs(output_base_dir, exist_ok=True)
+
+    for class_name in os.listdir(input_base_dir):
+        class_input_dir = os.path.join(input_base_dir, class_name)
+        
+        if not os.path.isdir(class_input_dir):
+            continue
+
+        class_output_dir = os.path.join(output_base_dir, class_name)
+        os.makedirs(class_output_dir, exist_ok=True)
+
+        image_files = [file for file in os.listdir(class_input_dir) if file.endswith(('.png', '.jpg', '.jpeg'))]
+
+        for img_file in image_files:
+            img_path = os.path.join(class_input_dir, img_file)
+            image = cv2.imread(img_path)
+
+            if image is None:
+                print(f"Error loading image {img_path}. Skipping.")
+                continue
+
+            # Resize image
+            image_resized = cv2.resize(image, target_size)
+
+            # Reduce noise
+            image_denoised = reduce_noise(image_resized)
+
+            # Apply color correction
+            image_corrected = color_correction(image_denoised)
+
+            # Normalize pixel values to the range [0, 1]
+            image_normalized = image_corrected / 255.0
+
+            # Save the processed image
+            processed_img_name = f'{os.path.splitext(img_file)[0]}_processed.jpg'
+            cv2.imwrite(os.path.join(class_output_dir, processed_img_name), image_normalized * 255)  # Scale back to 0-255 for saving
+
+    print(f"Preprocessing completed for all classes. Check the output base directory: {output_base_dir}")
+
 # Paths for input and output base directories
 input_directory = r"C:\Users\navon\OneDrive\Documents\ai workd\resized_data\test"
 output_directory = r"C:\Users\navon\OneDrive\Documents\ai workd\augment_test"
+output2_directory = r"C:\Users\navon\OneDrive\Documents\ai workd\processed_images"
 
 # Step 1: Augment images for all classes and save them
 augment_and_save_images(input_directory, output_directory, num_augmentations_per_image=20)
+
+# Step 2: Preprocess the augmented images and save them to another directory
+preprocess_and_save_images(output_directory, output2_directory)
