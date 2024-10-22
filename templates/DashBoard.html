@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produce Information</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        header {
+            text-align: center;
+            background-color: #2d3e50;
+            color: #fff;
+            padding: 20px 0;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        .produce-block {
+            display: flex;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            transition: all 0.3s ease-in-out;
+        }
+        .produce-block:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-bottom-color: #0077b6;
+        }
+        .info-section {
+            flex: 1;
+            padding-right: 20px;
+        }
+        .info-section .field {
+            margin-bottom: 20px;
+        }
+        .info-section .field label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .info-section .field .value {
+            font-size: 1rem;
+            color: #444;
+            padding: 10px;
+            background-color: #f7f9fb;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .image-section {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-section img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            transition: transform 0.3s ease-in-out;
+        }
+        .image-section img:hover {
+            transform: scale(1.05);
+        }
+        .image-section label {
+            font-size: 0.95rem;
+            color: #555;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        /* Button */
+        .view-more {
+            display: inline-block;
+            background-color: #0077b6;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
+        }
+        .view-more:hover {
+            background-color: #005f8d;
+        }
+        /* Footer */
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #777;
+            padding: 15px 0;
+            border-top: 1px solid #ddd;
+            background-color: #f7f7f7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>Produce Information</header>
+
+        <!-- Produce Block -->
+        <div class="produce-block">
+            <div class="info-section">
+                <!-- Conditionally show/hide brand based on item type -->
+                {% if item.item_type != 'fruit' and item.item_type != 'vegetable' %}
+                    <div class="field">
+                        <label>Brand</label>
+                        <div class="value">{{ item.brand }}</div>
+                    </div>
+                {% endif %}
+
+                <div class="field">
+                    <label>Item</label>
+                    <div class="value">{{ item.item_name }}</div>
+                </div>
+                <div class="field">
+                    <label>Expiry Date</label>
+                    <div class="value">{{ item.expiry_date }}</div>
+                </div>
+                <div class="field">
+                    <label>MRP</label>
+                    <div class="value">{{ item.mrp }}</div>
+                </div>
+                <div class="field">
+                    <label>Count</label>
+                    <div class="value">{{ item.count }}</div>
+                </div>
+                <div class="field">
+                    <label>Freshness</label>
+                    <div class="value">{{ item.freshness }}</div>
+                </div>
+                <a href="#" class="view-more">View More Details</a>
+            </div>
+
+            <div class="image-section">
+                <!-- Conditionally show brand image if the item is not a fruit or vegetable -->
+                {% if item.item_type != 'fruit' and item.item_type != 'vegetable' %}
+                    <label>Brand Image</label>
+                    <img src="{{ item.brand_image_url }}" alt="Brand Image">
+                {% endif %}
+                
+                <label>Live Video Feed</label>
+                <img src="{{ url_for('video_feed') }}" alt="Live Video Feed">
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            &copy; 2024 ..cOmaByte. All Rights Reserved.
+        </footer>
+    </div>
+
+</body>
+</html>

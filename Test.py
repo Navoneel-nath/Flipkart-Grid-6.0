@@ -28,6 +28,7 @@ def assess_quality(image):
     preprocessed_image = preprocess_image(image)
     quality_score = quality_model.predict(preprocessed_image)
     return quality_score[0][0]  # Assuming the model returns a score in a specific range
+
 # Function to run YOLO detection and quality assessment on camera frames
 def detect_and_assess_from_camera():
     # Open the camera feed
@@ -37,6 +38,10 @@ def detect_and_assess_from_camera():
         return
 
     best_quality_score = 0  # Initialize variable to keep track of the best quality score
+
+    # Create a full screen window
+    cv2.namedWindow('Fruit Detection and Quality Assessment', cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty('Fruit Detection and Quality Assessment', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     while True:
         ret, frame = cap.read()
@@ -76,18 +81,17 @@ def detect_and_assess_from_camera():
                 quality_score = assess_quality(cropped_image)
                 quality_result = "Pass" if quality_score >= QUALITY_THRESHOLD else "Not Pass"
 
-                # Update the best quality score if the current one is higher
+                # Only print if the current score is higher than the previous best quality score
                 if quality_score > best_quality_score:
                     best_quality_score = quality_score
+                    # Print the best quality score in the terminal
+                    print(f"New best quality score: {best_quality_score * 100:.2f}%")
 
                 # Display the quality score and result on the frame
                 cv2.putText(frame, f"Quality score: {quality_score * 100:.2f}%", (x1, y2 + 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
                 cv2.putText(frame, f"Result: {quality_result}", (x1, y2 + 40),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
-
-                # Print the result in the terminal
-                print(f"Fruit: {results.names[int(class_id)]}, Quality score: {quality_score * 100:.2f}%, Result: {quality_result}")
 
         # Display the resulting frame
         cv2.imshow('Fruit Detection and Quality Assessment', frame)
@@ -101,8 +105,7 @@ def detect_and_assess_from_camera():
     cv2.destroyAllWindows()
 
     # Print the best quality score after exiting the loop
-    print(f"Best Quality Score: {best_quality_score * 100:.2f}%")
+    print(f"Final Best Quality Score: {best_quality_score * 100:.2f}%")
 
 # Run the detection and quality assessment from camera feed
 detect_and_assess_from_camera()
-
