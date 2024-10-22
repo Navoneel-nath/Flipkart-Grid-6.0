@@ -5,11 +5,11 @@ from keras.models import load_model
 from PIL import Image
 
 # Load the YOLOv5 model from a local path
-yolo_model_path = r"C:\Users\pabit\Desktop\PabitraMaharana\FlipcartGrid60\YOLO\yolov5\runs\train\exp7\weights\best.pt"
+yolo_model_path = r"C:\Users\navoneel\flipkart\YOLO\yolov5\runs\train\exp7\weights\best.pt"
 model = torch.hub.load('ultralytics/yolov5', 'custom', path=yolo_model_path, force_reload=True)
 
 # Load the Keras model for quality assessment
-quality_model_path = r"C:\Users\pabit\Desktop\PabitraMaharana\FlipcartGrid60\fruit_quality_model.keras"
+quality_model_path = r"C:\Users\navoneel\flipkart\fruit_quality_model.keras"
 quality_model = load_model(quality_model_path)
 
 # Quality check threshold
