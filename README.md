@@ -1,4 +1,7 @@
 Grocery Quality detection(including packet foods and fruits, vegetables)(Flipkart Grid 6.0)
+
+
+
 Overview:
 The Grocery Quality Detection project focuses on ensuring the highest quality standards for fruits, vegetables, and packaged foods. Our team developed an integrated system using YOLOv5 for real-time detection and classification, ensuring only the best products reach consumers.
 
