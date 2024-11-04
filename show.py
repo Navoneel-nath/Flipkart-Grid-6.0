@@ -5,38 +5,37 @@ from keras.models import load_model
 from PIL import Image
 
 # Load the YOLOv5 model from a local path
-yolo_model_path = r"C:\Users\navoneel\flipkart\YOLO\yolov5\runs\train\exp7\weights\best.pt"
+yolo_model_path = r"C:\Users\pabit\Desktop\PabitraMaharana\FlipcartGrid60\YOLO\yolov5\runs\train\exp7\weights\best.pt"
 model = torch.hub.load('ultralytics/yolov5', 'custom', path=yolo_model_path, force_reload=True)
 
 # Load the Keras model for quality assessment
-quality_model_path = r"C:\Users\navoneel\flipkart\fruit_quality_model.keras"
+quality_model_path = r"C:\Users\pabit\Desktop\PabitraMaharana\FlipcartGrid60\fruit_quality_model.keras"
 quality_model = load_model(quality_model_path)
 
 # Quality check threshold
-QUALITY_THRESHOLD = 0.1  # Adjust this threshold based on your requirement
+QUALITY_THRESHOLD = 0.1 
 
 # Function to preprocess the image for the Keras model
-def preprocess_image(image, target_size=(224, 224)):  # Ensure this matches your Keras model input size
+def preprocess_image(image, target_size=(224, 224)): 
     image = image.resize(target_size)
     image_array = np.array(image)
-    image_array = image_array / 255.0  # Normalize the image
-    image_array = np.expand_dims(image_array, axis=0)  # Add batch dimension
+    image_array = image_array / 255.0 
+    image_array = np.expand_dims(image_array, axis=0) 
     return image_array
 
-# Function to perform quality assessment using the Keras model
+#perform quality assessment using the Keras model
 def assess_quality(image):
     preprocessed_image = preprocess_image(image)
     quality_score = quality_model.predict(preprocessed_image)
-    return quality_score[0][0]  # Assuming the model returns a score in a specific range
+    return quality_score[0][0]  
 # Function to run YOLO detection and quality assessment on camera frames
 def detect_and_assess_from_camera():
-    # Open the camera feed
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
 
-    best_quality_score = 0  # Initialize variable to keep track of the best quality score
+    best_quality_score = 0 
 
     while True:
         ret, frame = cap.read()
@@ -51,8 +50,8 @@ def detect_and_assess_from_camera():
         # Run YOLO detection on the frame
         results = model(pil_image)
 
-        # Extract detected bounding boxes and move to CPU
-        detections = results.xyxy[0].cpu().numpy()  # Add .cpu() to move tensor to CPU
+        # Extract detected bounding boxes
+        detections = results.xyxy[0].cpu().numpy()  
 
         if len(detections) == 0:
             print("No fruit detected. Quality score: 0%")
@@ -89,10 +88,9 @@ def detect_and_assess_from_camera():
                 # Print the result in the terminal
                 print(f"Fruit: {results.names[int(class_id)]}, Quality score: {quality_score * 100:.2f}%, Result: {quality_result}")
 
-        # Display the resulting frame
+    
         cv2.imshow('Fruit Detection and Quality Assessment', frame)
 
-        # Exit the loop when 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
