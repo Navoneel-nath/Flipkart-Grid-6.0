@@ -9,7 +9,7 @@ batch_size = 16
 epochs = 50
 learning_rate = 0.0001
 
-def create_model(input_shape):
+def create_model(input_shape, num_classes):
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -19,13 +19,14 @@ def create_model(input_shape):
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Flatten())
     model.add(layers.Dense(128, activation='relu'))
-    model.add(layers.Dense(1, activation='sigmoid'))
+    model.add(layers.Dense(num_classes, activation='softmax'))
     return model
 
 input_shape = (*image_size, 3)
-model = create_model(input_shape)
+num_classes = 26
+model = create_model(input_shape, num_classes)
 model.compile(optimizer=Adam(learning_rate=learning_rate),
-              loss='binary_crossentropy',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 train_datagen = ImageDataGenerator(
@@ -38,24 +39,23 @@ train_datagen = ImageDataGenerator(
     horizontal_flip=True,
     fill_mode='nearest'
 )
-
 validation_datagen = ImageDataGenerator(rescale=1./255)
-train_data_dir = r"C:\Users\ritish-flipkart\Downloads\flipkart\flipkart\dataset_sorted\train"
-validation_data_dir = r"C:\Users\ritish-flipkart\Downloads\flipkart\flipkart\dataset_sorted\validation"
+
+train_data_dir = r"path\to\dataset_sorted\train"
+validation_data_dir = r"path\to\dataset_sorted\validation"
 
 train_generator = train_datagen.flow_from_directory(
     train_data_dir,
     target_size=image_size,
     batch_size=batch_size,
-    class_mode='binary',
+    class_mode='categorical',
     shuffle=True
 )
-
 validation_generator = validation_datagen.flow_from_directory(
     validation_data_dir,
     target_size=image_size,
     batch_size=batch_size,
-    class_mode='binary',
+    class_mode='categorical',
     shuffle=False
 )
 
@@ -83,4 +83,5 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-model.save('fruit_quality_binary_model.keras')
+model.save('fruit_quality_combined_model.keras')
+
